@@ -9,10 +9,10 @@ class TrafficLight
   include TL
 
   def each
-    yield TL::Go [true, false, false] #toggles the which lights are on
-    yield [true, true, false]  #A truth table
-    yield [false, false, true]
-    yield [false, true, false]
+    yield TL::Go[true, false, false] #toggles which lights are on
+    yield TL::Wait[true, true, false]  #A truth table
+    yield TL::Stop[false, false, true]
+    yield TL::Wait[false, true, false]
   end
 end
 
@@ -37,9 +37,9 @@ class Bulb < Shoes::Shape #Inheriting from the module "Shoes", inheriting from "
       stack.append do
         oval left, top, 50
       end
-    end
+    end  
   end
-  
+
   def bulb_colour # update this string to color in the bulbs
     "#999999"
   end  
@@ -47,20 +47,21 @@ end
 
 class GoBulb < Bulb
   def bulb_colour
-    TL::Go
-  end
+    TL::Go if switched_on == true
+  end  
 end
 
 class WaitBulb < Bulb
   def bulb_colour
-    TL::Wait  
-  end  
+    TL::Wait if switched_on == true
+  end    
 end
+
 
 class StopBulb < Bulb
   def bulb_colour
-    TL::Stop
-  end  
+    TL::Stop if switched_on == true
+  end    
 end
 
 Shoes.app :title => "My Amazing Traffic Light", :width => 150, :height => 250 do
@@ -68,13 +69,13 @@ Shoes.app :title => "My Amazing Traffic Light", :width => 150, :height => 250 do
   stroke black    
   
   @traffic_light = TrafficLight.new
-  @top = StopBulb.new self, 50, 40, false     #instantiating three objects of type bold
+  @top = Bulb.new self, 50, 40, true     #instantiating three objects of type bold
   @middle = Bulb.new self, 50, 100, true # numbers are for positioning
   @bottom = Bulb.new self, 50, 160, true
   
   click do #anytime shoes detects a click anywhere on the traffic light, I'll give you a chance to do something
     
-    #@top = StopBulb.new self, 50, 40, false # Need to assign the each method's Boolean to switch the correct bulbs
+    @top = StopBulb.new self, 50, 40, false # Need to assign the each method's Boolean to switch the correct bulbs
     # @middle = WaitBulb.new self, 50, 100, false
     # @bottom = GoBulb.new self, 50, 160, false
 
